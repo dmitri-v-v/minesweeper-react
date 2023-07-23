@@ -2,9 +2,9 @@ import React from "react";
 
 import { Container } from '@mui/material';
 
-import Board from "../Board";
-import { BoardState } from "@src/types/board";
-import { MinesweeperState } from "@src/types/minesweeper";
+import Board from "components/Board";
+import { BoardState } from "types/board";
+import { MinesweeperState } from "types/minesweeper";
 
 import "./Minesweeper.scss";
 
