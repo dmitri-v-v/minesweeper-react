@@ -8,12 +8,15 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({rows, cols}) => {
-  const grid = Array(rows).fill(null).map(() => Array(cols).fill(0));
   const style = { '--rows': rows, '--cols': cols } as React.CSSProperties;
+
+  const grid = Array(rows).fill(null).map(() => Array(cols).fill(0));
 
   return (
     <div className="board" style={ style }>
-      {grid.map((row, rowIndex) => row.map((col, colIndex) => <div>({rowIndex},{colIndex})</div>))}
+      {grid.map((row, rowIndex) => row.map((col, colIndex) => {
+        return <div className="cell" key={`${rowIndex}-${colIndex}`}>({rowIndex},{colIndex})</div>
+      }))}
     </div>
   );
 }
