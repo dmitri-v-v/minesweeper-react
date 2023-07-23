@@ -13,7 +13,9 @@ const Board: React.FC<BoardProps> = ({rows, cols}) => {
 
   return (
     <div className="board" style={ style }>
-      {grid.map((row, rowIndex) => row.map((col, colIndex) => <div>({rowIndex},{colIndex})</div>))}
+      {grid.map((row, rowIndex) => row.map((col, colIndex) => {
+        return <div className="cell" key={`${rowIndex}-${colIndex}`}>({rowIndex},{colIndex})</div>
+      }))}
     </div>
   );
 }

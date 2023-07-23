@@ -5,7 +5,6 @@ import { Container } from '@mui/material';
 import Board from "../Board";
 
 import "./Minesweeper.scss";
-import { stat } from "fs";
 
 interface MinesweeperState {
   rows: number;

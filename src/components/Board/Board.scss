@@ -4,3 +4,11 @@
   grid-template-columns: repeat(var(--cols), 1fr);
   grid-template-rows: repeat(var(--rows), 1fr);
 }
+
+.cell {
+  border: 1px solid black;
+  display: flex;
+  place-content: center;
+  align-items: center;
+  padding: 1rem;
+}
