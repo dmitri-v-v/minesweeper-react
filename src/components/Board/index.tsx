@@ -4,6 +4,8 @@ import './Board.scss';
 
 import { BoardProps } from "types/board";
 import { CellState, CellValue } from "types/cell";
+import { getSurroundingCells } from "utils/grid";
+import { incrementCellValue } from "utils/cellUtils";
 
 const Board: React.FC<BoardProps> = ({board}) => {
   const style = { '--rows': board.rows, '--cols': board.cols } as React.CSSProperties;
@@ -33,6 +35,15 @@ const Board: React.FC<BoardProps> = ({board}) => {
         if (grid[bombRow][bombCol].value !== CellValue.Bomb) {
           grid[bombRow][bombCol].value = CellValue.Bomb;
           bombsPlaced++;
+
+          // Increment CellValues of surrounding cells since there's now a bomb here:
+          const surroundingCells = getSurroundingCells(grid, bombRow, bombCol);
+
+          for (const cell of surroundingCells) {
+            if (cell.value !== CellValue.Bomb) {
+              cell.value = incrementCellValue(cell.value);
+            }
+          }
         }
       }
     };
