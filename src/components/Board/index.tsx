@@ -2,19 +2,16 @@ import React from "react";
 
 import './Board.scss';
 
-interface BoardProps {
-  rows: number;
-  cols: number;
-}
+import { BoardProps } from "@src/types/board";
 
-const Board: React.FC<BoardProps> = ({rows, cols}) => {
-  const style = { '--rows': rows, '--cols': cols } as React.CSSProperties;
+const Board: React.FC<BoardProps> = ({board}) => {
+  const style = { '--rows': board.rows, '--cols': board.cols } as React.CSSProperties;
 
-  const grid = Array(rows).fill(null).map(() => Array(cols).fill(0));
+  const grid = Array(board.rows).fill(null).map(() => Array(board.cols).fill(0));
 
   return (
     <div className="board" style={ style }>
-      {grid.map((row, rowIndex) => row.map((col, colIndex) => {
+      {grid.map((row, rowIndex) => row.map((_, colIndex) => {
         return <div className="cell" key={`${rowIndex}-${colIndex}`}>({rowIndex},{colIndex})</div>
       }))}
     </div>
