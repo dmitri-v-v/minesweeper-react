@@ -14,8 +14,8 @@ const Board: React.FC<BoardProps> = ({board}) => {
       .fill(null)
       .map((_, colIndex) => {
         return {
-          x: colIndex,
-          y: rowIndex,
+          col: colIndex,
+          row: rowIndex,
           value: CellValue.None,
           isRevealed: false
         } as CellState;
@@ -27,11 +27,11 @@ const Board: React.FC<BoardProps> = ({board}) => {
       let bombsPlaced = 0;
 
       while (bombsPlaced < board.bombs) {
-        const bombX = Math.floor(Math.random() * board.cols);
-        const bombY = Math.floor(Math.random() * board.rows);
+        const bombCol = Math.floor(Math.random() * board.cols);
+        const bombRow = Math.floor(Math.random() * board.rows);
 
-        if (grid[bombY][bombX].value !== CellValue.Bomb) {
-          grid[bombY][bombX].value = CellValue.Bomb;
+        if (grid[bombRow][bombCol].value !== CellValue.Bomb) {
+          grid[bombRow][bombCol].value = CellValue.Bomb;
           bombsPlaced++;
         }
       }

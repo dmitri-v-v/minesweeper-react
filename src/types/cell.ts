@@ -1,6 +1,6 @@
 export interface CellState {
-  x: number;
-  y: number;
+  row: number;
+  col: number;
   value: CellValue;
   isRevealed: boolean;
 }
