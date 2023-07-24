@@ -1,8 +1,8 @@
 import React from "react";
 
-import Cell from "components/Cell";
+import CellComponent from "components/Cell";
 import { BoardProps, BoardState } from "types/board";
-import { CellProps, CellValue } from "types/cell";
+import { Cell, CellValue } from "types/cell";
 import { getSurroundingCells } from "utils/grid";
 import { incrementCellValue } from "utils/cellUtils";
 
@@ -18,8 +18,8 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     };
   }
 
-  initializeBoard(rows: number, cols: number, bombs: number): CellProps[][] {
-    const grid: CellProps[][] = Array(rows)
+  initializeBoard(rows: number, cols: number, bombs: number): Cell[][] {
+    const grid: Cell[][] = Array(rows)
       .fill(null)
       .map((_, rowIndex) => Array(cols)
         .fill(null)
@@ -28,17 +28,17 @@ export default class Board extends React.Component<BoardProps, BoardState> {
             col: colIndex,
             row: rowIndex,
             value: CellValue.None,
-          } as CellProps;
+          } as Cell;
         })
       );
 
-    return this.placeBombs(grid);
+    return this.placeBombs(grid, bombs);
   }
 
-  placeBombs(grid: CellProps[][]): CellProps[][] {
+  placeBombs(grid: Cell[][], bombs: number): Cell[][] {
     let bombsPlaced = 0;
 
-    while (bombsPlaced < this.props.bombs) {
+    while (bombsPlaced < bombs) {
       const bombCol = Math.floor(Math.random() * this.props.cols);
       const bombRow = Math.floor(Math.random() * this.props.rows);
 
@@ -79,8 +79,8 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     return (
       <div className="board" style={ style }>
         {grid.map((row, rowIndex) => row.map((cell, colIndex) => (
-          <Cell 
-            { ...cell }
+          <CellComponent 
+            cell={cell}
             key={`${rowIndex}-${colIndex}`}
             onReveal ={this.handleCellReveal}
             onExplosion={this.handleExplosion}

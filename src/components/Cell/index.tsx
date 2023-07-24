@@ -1,42 +1,49 @@
 import React from "react";
 import { Button } from '@mui/material';
-import { CellProps, CellValue } from "types/cell";
+import { Cell, CellState, CellValue } from "types/cell";
 
-interface CellState {
-  isRevealed: boolean;
-  isFlagged: boolean;
+interface CellProps {
+  cell: Cell,
+  onReveal: (row: number, col: number) => void;
+  onExplosion: (row: number, col: number) => void;
 }
 
-export default class Cell extends React.Component<CellProps, CellState> {
+interface CellComponentState {
+  value: CellState;
+}
+
+export default class CellComponent extends React.Component<CellProps, CellComponentState> {
   constructor(props: CellProps) {
     super(props);
 
     this.state = {
-      isRevealed: false,
-      isFlagged: false
+      value: props.cell.state
     };
   }
 
-  handleCellClick = () => {
-    const { isRevealed } = this.state;
+  isRevealed = (): boolean => this.state.value === CellState.Revealed;
+  isFlagged = (): boolean => this.state.value === CellState.Flagged;
+  isBomb = (): boolean => this.props.cell.value === CellValue.Bomb;
 
-    if (!isRevealed) {
-      this.setState({ isRevealed: true });
+  handleCellClick = () => {
+    if (!this.isRevealed()) {
+      this.setState({value: CellState.Revealed});
     }
 
-    if (this.props.value === CellValue.Bomb) {
-      this.props.onExplosion(this.props.row, this.props.col);
+    if (this.isBomb()) {
+      this.props.onExplosion(this.props.cell.row, this.props.cell.col);
     } else {
-      this.props.onReveal(this.props.row, this.props.col);
+      this.props.onReveal(this.props.cell.row, this.props.cell.col);
     }
   };
 
   render() {
-    const { isRevealed } = this.state;
-
     return (
-      <Button variant={isRevealed ? "outlined" : "contained"} disabled={isRevealed} onClick={this.handleCellClick}>
-        { isRevealed ? this.props.value : "?"}
+      <Button 
+        variant={this.isRevealed() ? "outlined" : "contained"}
+        disabled={this.isRevealed()} 
+        onClick={this.handleCellClick}>
+        { this.isRevealed() ? this.props.cell.value : "?"}
       </Button>
     );
   }

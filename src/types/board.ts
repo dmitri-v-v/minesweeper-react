@@ -1,4 +1,4 @@
-import { CellProps } from "types/cell";
+import { Cell } from "types/cell";
 
 export interface BoardProps {
   rows: number;
@@ -7,5 +7,5 @@ export interface BoardProps {
 }
 
 export interface BoardState {
-  grid: CellProps[][];
+  grid: Cell[][];
 }

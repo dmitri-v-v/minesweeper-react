@@ -1,11 +1,3 @@
-export interface CellProps {
-  row: number;
-  col: number;
-  value: CellValue;
-  onReveal: (row: number, col: number) => void;
-  onExplosion: (row: number, col: number) => void;
-}
-
 export enum CellValue {
   None = 0,
   One = 1,
@@ -16,5 +8,18 @@ export enum CellValue {
   Six = 6,
   Seven = 7,
   Eight = 8,
-  Bomb = '💣',
+  Bomb = '💣'
+}
+
+export enum CellState {
+  Default,
+  Revealed,
+  Flagged
+}
+
+export type Cell = {
+  state: CellState,
+  value: CellValue,
+  row: number,
+  col: number
 }
