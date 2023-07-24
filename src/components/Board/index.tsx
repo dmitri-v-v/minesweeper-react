@@ -62,12 +62,28 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     return grid;
   }
 
-  handleCellReveal = (row: number, col:number) => {
+  revealCellInState(row: number, col:number): void {
     this.setState((prevState) => {
       const grid = [...prevState.grid];
       grid[row][col].isRevealed = true;
       return { grid };
     });
+  }
+
+  handleCellReveal(row: number, col:number): void {
+    this.revealCellInState(row, col);
+
+    // TODO: Reveal all neighbours.
+    console.log(`Revealed cell at (${row+1},${col+1})`);
+  }
+
+  handleExplosion = (row: number, col: number) => {
+    this.revealCellInState(row, col);
+
+    // TODO: Update Cell's background to red.
+
+    // TODO: reveal all other bombs.
+    console.log(`DEAD because of bomb at (${row+1},${col+1})`);
   }
 
   render() {
@@ -81,6 +97,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
             key={`${rowIndex}-${colIndex}`}
             cellState={cell}
             onReveal ={this.handleCellReveal}
+            onExplosion={this.handleExplosion}
           />
         )))}
       </div>
