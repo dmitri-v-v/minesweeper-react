@@ -2,7 +2,7 @@ import React from "react";
 
 import Cell from "components/Cell";
 import { BoardProps, BoardState } from "types/board";
-import { CellState, CellValue } from "types/cell";
+import { CellProps, CellValue } from "types/cell";
 import { getSurroundingCells } from "utils/grid";
 import { incrementCellValue } from "utils/cellUtils";
 
@@ -18,8 +18,8 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     };
   }
 
-  initializeBoard(rows: number, cols: number, bombs: number): CellState[][] {
-    const grid: CellState[][] = Array(rows)
+  initializeBoard(rows: number, cols: number, bombs: number): CellProps[][] {
+    const grid: CellProps[][] = Array(rows)
       .fill(null)
       .map((_, rowIndex) => Array(cols)
         .fill(null)
@@ -28,15 +28,14 @@ export default class Board extends React.Component<BoardProps, BoardState> {
             col: colIndex,
             row: rowIndex,
             value: CellValue.None,
-            isRevealed: false
-          } as CellState;
+          } as CellProps;
         })
       );
 
     return this.placeBombs(grid);
   }
 
-  placeBombs(grid: CellState[][]): CellState[][] {
+  placeBombs(grid: CellProps[][]): CellProps[][] {
     let bombsPlaced = 0;
 
     while (bombsPlaced < this.props.bombs) {
@@ -61,24 +60,12 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     return grid;
   }
 
-  revealCellInState(row: number, col:number): void {
-    this.setState((prevState) => {
-      const grid = [...prevState.grid];
-      grid[row][col].isRevealed = true;
-      return { grid };
-    });
-  }
-
   handleCellReveal(row: number, col:number): void {
-    this.revealCellInState(row, col);
-
     // TODO: Reveal all neighbours.
     console.log(`Revealed cell at (${row+1},${col+1})`);
   }
 
   handleExplosion = (row: number, col: number) => {
-    this.revealCellInState(row, col);
-
     // TODO: Update Cell's background to red.
 
     // TODO: reveal all other bombs.
@@ -93,8 +80,8 @@ export default class Board extends React.Component<BoardProps, BoardState> {
       <div className="board" style={ style }>
         {grid.map((row, rowIndex) => row.map((cell, colIndex) => (
           <Cell 
+            { ...cell }
             key={`${rowIndex}-${colIndex}`}
-            cellState={cell}
             onReveal ={this.handleCellReveal}
             onExplosion={this.handleExplosion}
           />

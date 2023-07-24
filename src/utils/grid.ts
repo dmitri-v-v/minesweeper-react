@@ -1,7 +1,7 @@
-import { CellState } from "types/cell"
+import { CellProps } from "types/cell"
 
-export function getSurroundingCells(grid: CellState[][], row: number, col: number): CellState[] {
-  const surroundingCells: CellState[] = [];
+export function getSurroundingCells(grid: CellProps[][], row: number, col: number): CellProps[] {
+  const surroundingCells: CellProps[] = [];
 
   const numRows = grid.length;
   const numCols = grid[0].length;

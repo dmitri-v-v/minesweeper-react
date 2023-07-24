@@ -1,8 +1,9 @@
-export interface CellState {
+export interface CellProps {
   row: number;
   col: number;
   value: CellValue;
-  isRevealed: boolean;
+  onReveal: (row: number, col: number) => void;
+  onExplosion: (row: number, col: number) => void;
 }
 
 export enum CellValue {
