@@ -1,9 +1,11 @@
-export interface BoardState {
+import { CellState } from "types/cell";
+
+export interface BoardProps {
   rows: number;
   cols: number;
   bombs: number;
 }
 
-export interface BoardProps {
-  board: BoardState;
+export interface BoardState {
+  grid: CellState[][];
 }

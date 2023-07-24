@@ -3,21 +3,21 @@ import React from "react";
 import { Container } from '@mui/material';
 
 import Board from "components/Board";
-import { BoardState } from "types/board";
+import { BoardProps } from "types/board";
 import { MinesweeperState } from "types/minesweeper";
 
 import "./Minesweeper.scss";
 
 
+
 class Minesweeper extends React.Component<{}, MinesweeperState> {
-  defaultBoard: BoardState = {
+  static defaultBoard: BoardProps = {
     cols: 7,
     rows: 5,
     bombs: 10
   };
   
   state: MinesweeperState = {
-    board: this.defaultBoard,
     flags: 0
   };
 
@@ -26,7 +26,7 @@ class Minesweeper extends React.Component<{}, MinesweeperState> {
       <Container component='main' maxWidth='md'>
         <div className="center">
           <h1>React Minesweeper</h1>
-          <Board board={this.state.board} />
+          <Board {...Minesweeper.defaultBoard} />
         </div>
       </Container>
     );

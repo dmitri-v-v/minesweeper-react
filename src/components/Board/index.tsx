@@ -1,61 +1,75 @@
 import React from "react";
 
-import './Board.scss';
-
-import { BoardProps } from "types/board";
+import { BoardProps, BoardState } from "types/board";
 import { CellState, CellValue } from "types/cell";
 import { getSurroundingCells } from "utils/grid";
 import { incrementCellValue } from "utils/cellUtils";
 
-const Board: React.FC<BoardProps> = ({board}) => {
-  const style = { '--rows': board.rows, '--cols': board.cols } as React.CSSProperties;
+import './Board.scss';
 
-  const grid: CellState[][] = Array(board.rows)
-    .fill(null)
-    .map((_, rowIndex) => Array(board.cols)
+export default class Board extends React.Component<BoardProps, BoardState> {
+  
+  constructor(props: BoardProps) {
+    super(props);
+
+    this.state = {
+      grid: this.initializeBoard(props.rows, props.cols, props.bombs),
+    };
+  }
+
+  initializeBoard(rows: number, cols: number, bombs: number): CellState[][] {
+    const grid: CellState[][] = Array(rows)
       .fill(null)
-      .map((_, colIndex) => {
-        return {
-          col: colIndex,
-          row: rowIndex,
-          value: CellValue.None,
-          isRevealed: false
-        } as CellState;
-      })
-    );
+      .map((_, rowIndex) => Array(cols)
+        .fill(null)
+        .map((_, colIndex) => {
+          return {
+            col: colIndex,
+            row: rowIndex,
+            value: CellValue.None,
+            isRevealed: false
+          } as CellState;
+        })
+      );
 
-    // Fill the grid with bombs:
-    const placeBombs = () => {
-      let bombsPlaced = 0;
+    return this.placeBombs(grid);
+  }
 
-      while (bombsPlaced < board.bombs) {
-        const bombCol = Math.floor(Math.random() * board.cols);
-        const bombRow = Math.floor(Math.random() * board.rows);
+  placeBombs(grid: CellState[][]): CellState[][] {
+    let bombsPlaced = 0;
 
-        if (grid[bombRow][bombCol].value !== CellValue.Bomb) {
-          grid[bombRow][bombCol].value = CellValue.Bomb;
-          bombsPlaced++;
+    while (bombsPlaced < this.props.bombs) {
+      const bombCol = Math.floor(Math.random() * this.props.cols);
+      const bombRow = Math.floor(Math.random() * this.props.rows);
 
-          // Increment CellValues of surrounding cells since there's now a bomb here:
-          const surroundingCells = getSurroundingCells(grid, bombRow, bombCol);
+      if (grid[bombRow][bombCol].value !== CellValue.Bomb) {
+        grid[bombRow][bombCol].value = CellValue.Bomb;
+        bombsPlaced++;
 
-          for (const cell of surroundingCells) {
-            if (cell.value !== CellValue.Bomb) {
-              cell.value = incrementCellValue(cell.value);
-            }
+        // Increment CellValues of surrounding cells since there's now a bomb here:
+        const surroundingCells = getSurroundingCells(grid, bombRow, bombCol);
+
+        for (const cell of surroundingCells) {
+          if (cell.value !== CellValue.Bomb) {
+            cell.value = incrementCellValue(cell.value);
           }
         }
       }
-    };
-    placeBombs();
+    }
 
-  return (
-    <div className="board" style={ style }>
-      {grid.map((row, rowIndex) => row.map((_, colIndex) => {
-        return <div className="cell" key={`${rowIndex}-${colIndex}`}>{grid[rowIndex][colIndex].value}</div>
-      }))}
-    </div>
-  );
+    return grid;
+  }
+
+  render() {
+    const style = { '--rows': this.props.rows, '--cols': this.props.cols } as React.CSSProperties;
+    const grid = this.state.grid;
+
+    return (
+      <div className="board" style={ style }>
+        {grid.map((row, rowIndex) => row.map((cell, colIndex) => {
+          return <div className="cell" key={`${rowIndex}-${colIndex}`}>{grid[rowIndex][colIndex].value}</div>
+        }))}
+      </div>
+    );
+  }
 }
-
-export default Board;
