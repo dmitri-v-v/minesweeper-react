@@ -1,11 +1,13 @@
 import React from "react";
 
+import Cell from "components/Cell";
 import { BoardProps, BoardState } from "types/board";
 import { CellState, CellValue } from "types/cell";
 import { getSurroundingCells } from "utils/grid";
 import { incrementCellValue } from "utils/cellUtils";
 
 import './Board.scss';
+import { Console } from "console";
 
 export default class Board extends React.Component<BoardProps, BoardState> {
   
@@ -60,15 +62,27 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     return grid;
   }
 
+  handleCellReveal = (row: number, col:number) => {
+    this.setState((prevState) => {
+      const grid = [...prevState.grid];
+      grid[row][col].isRevealed = true;
+      return { grid };
+    });
+  }
+
   render() {
     const style = { '--rows': this.props.rows, '--cols': this.props.cols } as React.CSSProperties;
     const grid = this.state.grid;
 
     return (
       <div className="board" style={ style }>
-        {grid.map((row, rowIndex) => row.map((cell, colIndex) => {
-          return <div className="cell" key={`${rowIndex}-${colIndex}`}>{grid[rowIndex][colIndex].value}</div>
-        }))}
+        {grid.map((row, rowIndex) => row.map((cell, colIndex) => (
+          <Cell 
+            key={`${rowIndex}-${colIndex}`}
+            cellState={cell}
+            onReveal ={this.handleCellReveal}
+          />
+        )))}
       </div>
     );
   }
