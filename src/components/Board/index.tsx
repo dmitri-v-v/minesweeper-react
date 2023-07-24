@@ -7,7 +7,6 @@ import { getSurroundingCells } from "utils/grid";
 import { incrementCellValue } from "utils/cellUtils";
 
 import './Board.scss';
-import { Console } from "console";
 
 export default class Board extends React.Component<BoardProps, BoardState> {
   
