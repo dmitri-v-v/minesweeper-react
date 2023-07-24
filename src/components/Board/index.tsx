@@ -2,7 +2,7 @@ import React from "react";
 
 import CellComponent from "components/Cell";
 import { BoardProps, BoardState } from "types/board";
-import { Cell, CellValue } from "types/cell";
+import { Cell, CellState, CellValue } from "types/cell";
 import { getSurroundingCells } from "utils/grid";
 import { incrementCellValue } from "utils/cellUtils";
 
@@ -60,12 +60,24 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     return grid;
   }
 
+  updateCellStateInGrid(row: number, col: number): void {
+    this.setState((prevState) => {
+      const grid = [...prevState.grid];
+      grid[row][col].state = CellState.Revealed;
+      return { grid };
+    });
+  }
+
   handleCellReveal(row: number, col:number): void {
+    this. updateCellStateInGrid(row, col);
+  
     // TODO: Reveal all neighbours.
     console.log(`Revealed cell at (${row+1},${col+1})`);
   }
 
   handleExplosion = (row: number, col: number) => {
+    this. updateCellStateInGrid(row, col);
+
     // TODO: Update Cell's background to red.
 
     // TODO: reveal all other bombs.
