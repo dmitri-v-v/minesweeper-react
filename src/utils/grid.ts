@@ -1,6 +1,6 @@
-import { Cell, CellState, CellValue } from "types/cell"
+import { Cell, CellCoordinates, CellState, CellValue } from "types/cell"
 
-export function getSurroundingCells(grid: Cell[][], row: number, col: number): Cell[] {
+export function getSurroundingCells(grid: Cell[][], coordinates: CellCoordinates): Cell[] {
   const surroundingCells: Cell[] = [];
 
   const numRows = grid.length;
@@ -19,8 +19,8 @@ export function getSurroundingCells(grid: Cell[][], row: number, col: number): C
   ];
 
   for (const offset of offsets) {
-    const newCol = col + offset.dCol;
-    const newRow = row + offset.dRow;
+    const newCol = coordinates.col + offset.dCol;
+    const newRow = coordinates.row + offset.dRow;
 
     // Check if the new coordinates are within bounds
     if (newRow >= 0 && newRow < numRows && newCol >= 0 && newCol < numCols) {
@@ -31,18 +31,20 @@ export function getSurroundingCells(grid: Cell[][], row: number, col: number): C
   return surroundingCells;
 }
 
-export function revealNeighbouringCells(grid: Cell[][], row: number, col: number): Cell[][] {
-  const neighbours = getSurroundingCells(grid, row, col);
+export function revealNeighbouringCells(grid: Cell[][], coordinates: CellCoordinates): Cell[][] {
+  const neighbours = getSurroundingCells(grid, coordinates);
 
   for (let cell of neighbours) {
     if (cell.state === CellState.Default && cell.value !== CellValue.Bomb) {
-      grid[cell.row][cell.col] = {
-        ...grid[cell.row][cell.col],
+      const {row, col} = cell.coordinates;
+      
+      grid[row][col] = {
+        ...grid[row][col],
         state: CellState.Revealed
       };
 
       if (cell.value === CellValue.None) {
-        revealNeighbouringCells(grid, cell.row, cell.col);
+        revealNeighbouringCells(grid, cell.coordinates);
       }
     }
   }

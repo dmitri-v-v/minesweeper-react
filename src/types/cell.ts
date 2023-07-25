@@ -16,10 +16,13 @@ export enum CellState {
   Revealed,
   Flagged
 }
-
-export type Cell = {
-  state: CellState,
-  value: CellValue,
+export interface CellCoordinates {
   row: number,
   col: number
+}
+
+export type Cell = {
+  coordinates: CellCoordinates,
+  state: CellState,
+  value: CellValue
 }

@@ -1,11 +1,11 @@
 import React from "react";
 import { Button } from '@mui/material';
-import { Cell, CellState, CellValue } from "types/cell";
+import { Cell, CellCoordinates, CellState, CellValue } from "types/cell";
 
 interface CellProps {
   cell: Cell,
-  onReveal: (row: number, col: number) => void;
-  onExplosion: (row: number, col: number) => void;
+  onReveal: (coordinates: CellCoordinates) => void;
+  onExplosion: (coordinates: CellCoordinates) => void;
 }
 
 export default class CellComponent extends React.Component<CellProps> {
@@ -15,9 +15,9 @@ export default class CellComponent extends React.Component<CellProps> {
 
   handleCellClick = () => {
     if (this.isBomb()) {
-      this.props.onExplosion(this.props.cell.row, this.props.cell.col);
+      this.props.onExplosion(this.props.cell.coordinates);
     } else {
-      this.props.onReveal(this.props.cell.row, this.props.cell.col);
+      this.props.onReveal(this.props.cell.coordinates);
     }
   };
 
