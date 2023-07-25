@@ -4,11 +4,12 @@ import { Container } from '@mui/material';
 
 import Board from "components/Board";
 import { BoardProps } from "types/board";
-import { MinesweeperState } from "types/minesweeper";
 
 import "./Minesweeper.scss";
 
-
+interface MinesweeperState {
+  flags: number
+}
 
 class Minesweeper extends React.Component<{}, MinesweeperState> {
   static defaultBoard: BoardProps = {
