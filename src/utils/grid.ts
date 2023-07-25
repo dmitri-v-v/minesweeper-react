@@ -1,4 +1,4 @@
-import { Cell } from "types/cell"
+import { Cell, CellState, CellValue } from "types/cell"
 
 export function getSurroundingCells(grid: Cell[][], row: number, col: number): Cell[] {
   const surroundingCells: Cell[] = [];
@@ -29,4 +29,23 @@ export function getSurroundingCells(grid: Cell[][], row: number, col: number): C
   }
 
   return surroundingCells;
+}
+
+export function revealNeighbouringCells(grid: Cell[][], row: number, col: number): Cell[][] {
+  const neighbours = getSurroundingCells(grid, row, col);
+
+  for (let cell of neighbours) {
+    if (cell.state === CellState.Default && cell.value !== CellValue.Bomb) {
+      grid[cell.row][cell.col] = {
+        ...grid[cell.row][cell.col],
+        state: CellState.Revealed
+      };
+
+      if (cell.value === CellValue.None) {
+        revealNeighbouringCells(grid, cell.row, cell.col);
+      }
+    }
+  }
+
+  return grid;
 }

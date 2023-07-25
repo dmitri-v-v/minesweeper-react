@@ -13,7 +13,7 @@ import "./Minesweeper.scss";
 class Minesweeper extends React.Component<{}, MinesweeperState> {
   static defaultBoard: BoardProps = {
     cols: 7,
-    rows: 5,
+    rows: 13,
     bombs: 10
   };
   

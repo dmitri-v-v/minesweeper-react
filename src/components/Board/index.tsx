@@ -3,7 +3,7 @@ import React from "react";
 import CellComponent from "components/Cell";
 import { BoardProps, BoardState } from "types/board";
 import { Cell, CellState, CellValue } from "types/cell";
-import { getSurroundingCells } from "utils/grid";
+import { getSurroundingCells, revealNeighbouringCells } from "utils/grid";
 import { incrementCellValue } from "utils/cellUtils";
 
 import './Board.scss';
@@ -27,6 +27,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
           return {
             col: colIndex,
             row: rowIndex,
+            state: CellState.Default,
             value: CellValue.None,
           } as Cell;
         })
@@ -60,7 +61,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     return grid;
   }
 
-  updateCellStateInGrid(row: number, col: number): void {
+  updateCellStateInGrid = (row: number, col: number): void => {
     this.setState((prevState) => {
       const grid = [...prevState.grid];
       grid[row][col].state = CellState.Revealed;
@@ -68,15 +69,18 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     });
   }
 
-  handleCellReveal(row: number, col:number): void {
-    this. updateCellStateInGrid(row, col);
-  
-    // TODO: Reveal all neighbours.
-    console.log(`Revealed cell at (${row+1},${col+1})`);
+  handleCellReveal= (row: number, col:number): void => {
+    this.updateCellStateInGrid(row, col);
+
+    if (this.state.grid[row][col].value === CellValue.None) {
+      // Clone the grid and cells to avoid direct mutation:
+      let newGrid = this.state.grid.map((rowCells) => rowCells.map((cell) => ({ ...cell })));
+      this.setState({ grid:  revealNeighbouringCells(newGrid, row, col) });
+    }
   }
 
   handleExplosion = (row: number, col: number) => {
-    this. updateCellStateInGrid(row, col);
+    this.updateCellStateInGrid(row, col);
 
     // TODO: Update Cell's background to red.
 
