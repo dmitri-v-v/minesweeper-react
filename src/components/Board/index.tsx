@@ -18,39 +18,39 @@ export default class Board extends React.Component<BoardProps, BoardState> {
   constructor(props: BoardProps) {
     super(props);
 
+    const initializedGrid = this.initializeBoard(this.props.rows, this.props.cols);
+    const bombs = this.placeBombs(initializedGrid, this.props.numBombs);
+
     this.state = {
-      grid: this.initializeBoard(props.rows, props.cols, props.numBombs),
-      bombs: []
+      grid: initializedGrid,
+      bombs: bombs
     };
   }
 
-  initializeBoard(rows: number, cols: number, bombs: number): Cell[][] {
-    const grid: Cell[][] = Array(rows)
-      .fill(null)
-      .map((_, rowIndex) => Array(cols)
-        .fill(null)
-        .map((_, colIndex) => {
-          return {
-            coordinates: { row: rowIndex, col: colIndex },
-            state: CellState.Default,
-            value: CellValue.None,
-          } as Cell;
-        })
-      );
-    
-    return this.placeBombs(grid, bombs);
+  initializeBoard(rows: number, cols: number): Cell[][] {
+    return Array(rows).fill(null).map((_, rowIndex) => 
+      Array(cols).fill(null).map((_, colIndex) => {
+        return {
+          coordinates: { row: rowIndex, col: colIndex },
+          state: CellState.Default,
+          value: CellValue.None,
+        } as Cell;
+      })
+    );
   }
 
-  placeBombs(grid: Cell[][], bombs: number): Cell[][] {
-    let bombsPlaced = 0;
+  placeBombs(grid: Cell[][], bombs: number): CellCoordinates[] {
+    let bombCounter = 0;
+    const bombsPlaced: CellCoordinates[] = [];
 
-    while (bombsPlaced < bombs) {
+    while (bombCounter < bombs) {
       const bombCol = Math.floor(Math.random() * this.props.cols);
       const bombRow = Math.floor(Math.random() * this.props.rows);
 
       if (grid[bombRow][bombCol].value !== CellValue.Bomb) {
         grid[bombRow][bombCol].value = CellValue.Bomb;
-        bombsPlaced++;
+        bombsPlaced.push({ row: bombRow, col: bombCol });
+        bombCounter++;
 
         // Increment CellValues of surrounding cells since there's now a bomb here:
         const surroundingCells = getSurroundingCells(grid, { row: bombRow, col: bombCol });
@@ -63,33 +63,46 @@ export default class Board extends React.Component<BoardProps, BoardState> {
       }
     }
 
-    return grid;
+    return bombsPlaced;
   }
 
-  updateCellStateInGrid = (coordinates: CellCoordinates): void => {
+  /**
+   * Allows to clone the grid to avoid direct mutation when modifying it.
+   */
+  cloneGrid = (grid: Cell[][]): Cell[][] => grid.map((rowCells) => rowCells.map((cell) => ({ ...cell })));
+
+  handleCellReveal = (coordinates: CellCoordinates): void => {
     this.setState((prevState) => {
-      const grid = [...prevState.grid];
-      grid[coordinates.row][coordinates.col].state = CellState.Revealed;
-      return { grid };
+      const newGrid = this.cloneGrid(prevState.grid);
+
+      if (prevState.grid[coordinates.row][coordinates.col].value === CellValue.None) {
+        return { grid: revealNeighbouringCells(newGrid, coordinates) };
+      } else {
+        newGrid[coordinates.row][coordinates.col].state = CellState.Revealed;
+        return { grid: newGrid };
+      }
     });
   }
 
-  handleCellReveal= (coordinates: CellCoordinates): void => {
-    this.updateCellStateInGrid(coordinates);
-
-    if (this.state.grid[coordinates.row][coordinates.col].value === CellValue.None) {
-      // Clone the grid and cells to avoid direct mutation:
-      let newGrid = this.state.grid.map((rowCells) => rowCells.map((cell) => ({ ...cell })));
-      this.setState({ grid: revealNeighbouringCells(newGrid, coordinates) });
-    }
-  }
-
+  /**
+   * Handles the explosion event by revealing all the other bombs.
+   * 
+   * @param coordinates 
+   */
   handleExplosion = (coordinates: CellCoordinates) => {
-    this.updateCellStateInGrid(coordinates);
+    this.setState((prevState) => {
+      const newGrid = this.cloneGrid(prevState.grid);
 
-    // TODO: Update Cell's background to red.
+      // TODO: Update the Cell at `coordinates` background to red.
 
-    // TODO: reveal all other bombs.
+      for (const bombCoordinates of prevState.bombs) {
+        if (newGrid[bombCoordinates.row][bombCoordinates.col].state !== CellState.Flagged) {
+          newGrid[bombCoordinates.row][bombCoordinates.col].state = CellState.Revealed;
+        }
+      }
+
+      return { grid: newGrid };
+    });
   }
 
   render() {

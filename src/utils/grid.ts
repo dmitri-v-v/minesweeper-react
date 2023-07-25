@@ -32,6 +32,9 @@ export function getSurroundingCells(grid: Cell[][], coordinates: CellCoordinates
 }
 
 export function revealNeighbouringCells(grid: Cell[][], coordinates: CellCoordinates): Cell[][] {
+  // Reveal the cell at coordinates first:
+  grid[coordinates.row][coordinates.col].state = CellState.Revealed;
+  
   const neighbours = getSurroundingCells(grid, coordinates);
 
   for (let cell of neighbours) {
