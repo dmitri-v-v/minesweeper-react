@@ -12,7 +12,7 @@ interface MinesweeperState {
 }
 
 class Minesweeper extends React.Component<{}, MinesweeperState> {
-  static defaultBoard: BoardProps = {
+  static defaultProps: BoardProps = {
     cols: 7,
     rows: 13,
     numBombs: 10
@@ -27,7 +27,7 @@ class Minesweeper extends React.Component<{}, MinesweeperState> {
       <Container component='main' maxWidth='md'>
         <div className="center">
           <h1>React Minesweeper</h1>
-          <Board {...Minesweeper.defaultBoard} />
+          <Board {...Minesweeper.defaultProps} />
         </div>
       </Container>
     );
