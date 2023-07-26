@@ -105,6 +105,19 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     });
   }
 
+  handleFlagToggle = (coordinates: CellCoordinates) => {
+    this.setState((prevState) => {
+      const newGrid = this.cloneGrid(prevState.grid);
+      const {row, col} = coordinates;
+      
+      newGrid[row][col].state = (
+        prevState.grid[row][col].state === CellState.Default ? CellState.Flagged : CellState.Default
+      );
+      
+      return { grid: newGrid };
+    });
+  }
+
   render() {
     const style = { '--rows': this.props.rows, '--cols': this.props.cols } as React.CSSProperties;
     const grid = this.state.grid;
@@ -117,6 +130,7 @@ export default class Board extends React.Component<BoardProps, BoardState> {
             key={`${rowIndex}-${colIndex}`}
             onReveal ={this.handleCellReveal}
             onExplosion={this.handleExplosion}
+            onFlag={this.handleFlagToggle}
           />
         )))}
       </div>
