@@ -1,15 +1,19 @@
 import React from "react";
+import { connect } from 'react-redux';
 import { Button } from '@mui/material';
+
 import { Cell, CellCoordinates, CellState, CellValue } from "types/cell";
+import { addFlag, removeFlag } from 'store/flagsSlice';
 
 interface CellProps {
   cell: Cell,
   onReveal: (coordinates: CellCoordinates) => void;
   onExplosion: (coordinates: CellCoordinates) => void;
-  onFlag: (coordinates: CellCoordinates) => void;
+  addFlag: (coords: CellCoordinates) => void;
+  removeFlag: (coords: CellCoordinates) => void;
 }
 
-export default class CellComponent extends React.Component<CellProps> {
+class CellComponent extends React.Component<CellProps> {
   isRevealed = (): boolean => this.props.cell.state === CellState.Revealed;
   isFlagged = (): boolean => this.props.cell.state === CellState.Flagged;
   isBomb = (): boolean => this.props.cell.value === CellValue.Bomb;
@@ -35,16 +39,22 @@ export default class CellComponent extends React.Component<CellProps> {
     }
   };
 
-  handleRightClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    this.props.onFlag(this.props.cell.coordinates);    
+  handleRightClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    
+    if(!this.isRevealed()) {
+      if (this.isFlagged()) {
+        this.props.removeFlag(this.props.cell.coordinates);
+      } else {
+        this.props.addFlag(this.props.cell.coordinates);
+      }
+    }
   }
 
   render() {
     return (
       <Button 
         variant={this.isRevealed() ? "outlined" : "contained"}
-        disabled={this.isRevealed()} 
         onClick={this.handleClick}
         onContextMenu={(e) => this.handleRightClick(e)}>
           { this.showCellContent() }
@@ -52,3 +62,12 @@ export default class CellComponent extends React.Component<CellProps> {
     );
   }
 }
+
+const mapStateToProps = () => ({});
+
+const mapDispatchToProps = {
+  addFlag,
+  removeFlag,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CellComponent);

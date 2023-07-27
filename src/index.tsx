@@ -1,14 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
+import { configureStore } from '@reduxjs/toolkit'
+import { Provider } from 'react-redux';
 
-import Minesweeper from './components/Minesweeper';
+import Minesweeper from 'components/Minesweeper';
+import rootReducer from 'store/rootReducer'
+
 import './index.scss';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const store = configureStore({
+  reducer: rootReducer,
+});
+
+const container = document.getElementById('root');
+const root = createRoot(container!);
+
 root.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <Minesweeper />
-  </React.StrictMode>
+  </Provider>
 );

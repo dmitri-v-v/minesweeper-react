@@ -1,10 +1,12 @@
 import React from "react";
+import { connect } from 'react-redux';
 
 import CellComponent from "components/Cell";
 import { BoardProps } from "types/board";
 import { Cell, CellCoordinates, CellState, CellValue } from "types/cell";
 import { getSurroundingCells, revealNeighbouringCells } from "utils/grid";
 import { incrementCellValue } from "utils/cellUtils";
+import { RootState } from 'store/rootReducer';
 
 import './Board.scss';
 
@@ -13,7 +15,7 @@ interface BoardState {
   bombs: CellCoordinates[];
 }
 
-export default class Board extends React.Component<BoardProps, BoardState> {
+class Board extends React.Component<BoardProps, BoardState> {
   
   constructor(props: BoardProps) {
     super(props);
@@ -25,6 +27,12 @@ export default class Board extends React.Component<BoardProps, BoardState> {
       grid: initializedGrid,
       bombs: bombs
     };
+  }
+
+  componentDidUpdate(prevProps: BoardProps) {
+    if (prevProps.flags !== this.props.flags) {
+      this.updateGridWithFlags(this.props.flags);
+    }
   }
 
   initializeBoard(rows: number, cols: number): Cell[][] {
@@ -105,16 +113,25 @@ export default class Board extends React.Component<BoardProps, BoardState> {
     });
   }
 
-  handleFlagToggle = (coordinates: CellCoordinates) => {
+  updateGridWithFlags = (flags: CellCoordinates[]) => {
     this.setState((prevState) => {
-      const newGrid = this.cloneGrid(prevState.grid);
-      const {row, col} = coordinates;
-      
-      newGrid[row][col].state = (
-        prevState.grid[row][col].state === CellState.Default ? CellState.Flagged : CellState.Default
+      const updatedGrid = prevState.grid.map((row) =>
+        row.map((cell) => {
+          const { coordinates } = cell;
+          const hasFlag = flags.some((coord) => coord.row === coordinates.row && coord.col === coordinates.col);
+          const updatedCell = { ...cell };
+
+          if (hasFlag && cell.state !== CellState.Flagged) {
+            updatedCell.state = CellState.Flagged;
+          } else if (!hasFlag && cell.state === CellState.Flagged) {
+            updatedCell.state = CellState.Default;
+          }
+
+          return updatedCell;
+        })
       );
-      
-      return { grid: newGrid };
+
+      return { grid: updatedGrid };
     });
   }
 
@@ -130,10 +147,17 @@ export default class Board extends React.Component<BoardProps, BoardState> {
             key={`${rowIndex}-${colIndex}`}
             onReveal ={this.handleCellReveal}
             onExplosion={this.handleExplosion}
-            onFlag={this.handleFlagToggle}
           />
         )))}
       </div>
     );
   }
 }
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    flags: state.flags,
+  };
+};
+
+export default connect(mapStateToProps)(Board);

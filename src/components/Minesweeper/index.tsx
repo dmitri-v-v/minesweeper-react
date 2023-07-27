@@ -15,7 +15,8 @@ class Minesweeper extends React.Component<{}, MinesweeperState> {
   static defaultProps: BoardProps = {
     cols: 7,
     rows: 13,
-    numBombs: 10
+    numBombs: 10,
+    flags: []
   };
   
   state: MinesweeperState = {
